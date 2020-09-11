@@ -1,0 +1,48 @@
+<html>
+<body>
+
+<h3>Planet Topography Generator</h3>
+<p>When the Generate button is clicked, a planet with random topography will be generated, by starting with an octohedron and recursively subdividing it until its shape approaches a sphere.  Increasing the number of times to subdivide will make for a more detailed globe, but the time to compute that detail will increase with the square of the number of levels.</p>
+<label>Times to Subdivide Initial Octohedron:</label>
+<input id="inputTimesToSubdivide" type="number" value="5"></input>
+<br />
+<button onclick="buttonGenerate_Clicked();">Generate</button>
+<br />
+
+<div id="divMain"></div>
+
+<script type="text/javascript">
+
+function buttonGenerate_Clicked()
+{
+	var d = document;
+	var inputTimesToSubdivide = d.getElementById("inputTimesToSubdivide");
+	var timesToSubdivide = parseInt(inputTimesToSubdivide.value);
+	var generator = new PlanetTopographyGenerator();
+	generator.generate(timesToSubdivide);
+}
+
+</script>
+
+<script type="text/javascript" src="PlanetTopographyGenerator.js"></script>
+
+<script type="text/javascript" src="ArrayExtensions.js"></script>
+<script type="text/javascript" src="Camera.js"></script>
+<script type="text/javascript" src="Constraint_LookAtBody.js"></script>
+<script type="text/javascript" src="Constraint_MaintainDistance.js"></script>
+<script type="text/javascript" src="Coords.js"></script>
+<script type="text/javascript" src="Display.js"></script>
+<script type="text/javascript" src="Empty.js"></script>
+<script type="text/javascript" src="Plane.js"></script>
+<script type="text/javascript" src="Globals.js"></script>
+<script type="text/javascript" src="InputHelper.js"></script>
+<script type="text/javascript" src="Location.js"></script>
+<script type="text/javascript" src="Mesh.js"></script>
+<script type="text/javascript" src="MeshHelper.js"></script>
+<script type="text/javascript" src="Orientation.js"></script>
+<script type="text/javascript" src="Scene.js"></script>
+<script type="text/javascript" src="Vertex.js"></script>
+
+</script>
+</body>
+</html>
