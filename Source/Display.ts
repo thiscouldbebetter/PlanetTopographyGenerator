@@ -51,7 +51,7 @@ export class Display
 
 	drawMeshForCamera_Face
 	(
-		mesh: Mesh, camera: Camera, face: number[], verticesInFace: Vertex[]
+		mesh: Mesh, camera: Camera, face: Face, verticesInFace: Vertex[]
 	): void
 	{
 		verticesInFace.length = 0;
@@ -74,7 +74,7 @@ export class Display
 	(
 		mesh: Mesh,
 		camera: Camera,
-		face: number[],
+		face: Face,
 		verticesInFace: Vertex[]
 	): Vertex[]
 	{
@@ -84,15 +84,16 @@ export class Display
 		var displacementFromCameraToFaceVertex0 =
 			this._displacement;
 
-		for (var vi = 0; vi < face.length; vi++)
+		var faceVertexCount = face.vertexCount();
+		for (var vi = 0; vi < faceVertexCount; vi++)
 		{
-			var vertexIndex = face[vi];
+			var vertexIndex = face.vertexIndex(vi);
 			var vertex = mesh.vertices[vertexIndex];
 			verticesInFace.push(vertex);
 		}
 
 		var positionsOfVerticesInFace = 
-			Vertex.positionsForMany(verticesInFace);
+			verticesInFace.map(x => x.pos);
 		var faceNormal = 
 			plane.fromPoints(positionsOfVerticesInFace).normal;
 
@@ -121,7 +122,7 @@ export class Display
 
 	drawMeshForCamera_Face_Draw
 	(
-		camera: Camera, face: number[], verticesInFace: Vertex[]
+		camera: Camera, face: Face, verticesInFace: Vertex[]
 	): void
 	{
 		var drawPos = this._drawPos;
@@ -130,7 +131,8 @@ export class Display
 
 		this.graphics.beginPath();
 
-		for (var vi = 0; vi < face.length; vi++)
+		var faceVertexCount = face.vertexCount();
+		for (var vi = 0; vi < faceVertexCount; vi++)
 		{
 			var vertex = verticesInFace[vi];
 			faceAltitude += vertex.altitude;
@@ -158,7 +160,7 @@ export class Display
 
 		this.graphics.closePath();
 
-		faceAltitude /= face.length;
+		faceAltitude /= face.vertexCount();
 
 		var altitudeAtLowTide = .65;
 		var altitudeAtHighTide = .67;
@@ -214,8 +216,8 @@ export class Display
 
 		this.graphics = this.canvas.getContext("2d");
 
-		var divMain = document.getElementById("divMain");
-		divMain.appendChild(this.canvas);
+		var divOutput = document.getElementById("divOutput");
+		divOutput.appendChild(this.canvas);
 	}
 }
 

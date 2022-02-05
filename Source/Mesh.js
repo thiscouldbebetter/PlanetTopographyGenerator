@@ -18,14 +18,14 @@ var ThisCouldBeBetter;
                 return edgesByVertexIndex;
             }
             edges_Face(face, edgesByVertexIndex) {
-                var numberOfVerticesInFace = face.length;
+                var numberOfVerticesInFace = face.vertexCount();
                 for (var vi = 0; vi < numberOfVerticesInFace; vi++) {
                     var viNext = vi + 1;
                     if (viNext >= numberOfVerticesInFace) {
                         viNext = 0;
                     }
-                    var vertexIndex = face[vi];
-                    var vertexIndexNext = face[viNext];
+                    var vertexIndex = face.vertexIndex(vi);
+                    var vertexIndexNext = face.vertexIndex(viNext);
                     var vertexIndexMin = Math.min(vertexIndex, vertexIndexNext);
                     var vertexIndexMax = Math.max(vertexIndex, vertexIndexNext);
                     var edgesForVertexIndexMin = edgesByVertexIndex[vertexIndexMin];
@@ -37,7 +37,7 @@ var ThisCouldBeBetter;
                     if (edgesForVertexIndexMin[vertexIndexMax] == null) {
                         var vertex = this.vertices[vertexIndex];
                         var vertexNext = this.vertices[vertexIndexNext];
-                        var edge = [vertex, vertexNext];
+                        var edge = new PlanetTopographyGenerator.Edge([vertex, vertexNext]);
                         edgesForVertexIndexMin[vertexIndexMax] = edge;
                     }
                 }
@@ -56,8 +56,9 @@ var ThisCouldBeBetter;
                     var edgesForVertexIndexMin = edgesByVertexIndex[vMin];
                     var numberOfEdges = edgesForVertexIndexMin.length;
                     for (var vMax = 0; vMax < numberOfEdges; vMax++) {
-                        var edgeVertices = edgesForVertexIndexMin[vMax];
-                        if (edgeVertices != null) {
+                        var edge = edgesForVertexIndexMin[vMax];
+                        if (edge != null) {
+                            var edgeVertices = edge.vertices;
                             var edgeMidpoint = PlanetTopographyGenerator.Vertex.interpolate(edgeVertices[0], edgeVertices[1]);
                             edgeMidpointsForVertexIndexMin[vMax] =
                                 this.vertices.length;
@@ -73,20 +74,21 @@ var ThisCouldBeBetter;
                 var facesAfterSubdivide = [];
                 for (var f = 0; f < this.faces.length; f++) {
                     var faceParent = this.faces[f];
+                    var faceParentVertexCount = faceParent.vertexCount();
                     // var edgeMidpointsForParent = [];
-                    var faceCentral = [];
-                    for (var vi = 0; vi < faceParent.length; vi++) {
+                    var faceCentral = new PlanetTopographyGenerator.Face([]);
+                    for (var vi = 0; vi < faceParentVertexCount; vi++) {
                         var viPrev = vi - 1;
                         if (viPrev < 0) {
-                            viPrev = faceParent.length - 1;
+                            viPrev = faceParentVertexCount - 1;
                         }
                         var viNext = vi + 1;
-                        if (viNext >= faceParent.length) {
+                        if (viNext >= faceParentVertexCount) {
                             viNext = 0;
                         }
-                        var vertexIndex = faceParent[vi];
-                        var vertexIndexPrev = faceParent[viPrev];
-                        var vertexIndexNext = faceParent[viNext];
+                        var vertexIndex = faceParent.vertexIndex(vi);
+                        var vertexIndexPrev = faceParent.vertexIndex(viPrev);
+                        var vertexIndexNext = faceParent.vertexIndex(viNext);
                         var edgeVertexIndexMin = Math.min(vertexIndex, vertexIndexNext);
                         var edgeVertexIndexMax = Math.max(vertexIndex, vertexIndexNext);
                         // var edgeParent = 
@@ -97,12 +99,12 @@ var ThisCouldBeBetter;
                         //	edgesByVertexIndex[edgePrevVertexIndexMin][edgePrevVertexIndexMax];
                         var vertexIndexOfEdgeParentMidpoint = edgeMidpoints[edgeVertexIndexMin][edgeVertexIndexMax];
                         var vertexIndexOfEdgeParentMidpointPrev = edgeMidpoints[edgePrevVertexIndexMin][edgePrevVertexIndexMax];
-                        faceCentral.push(vertexIndexOfEdgeParentMidpoint);
-                        var faceCorner = [
+                        faceCentral.vertexIndexAdd(vertexIndexOfEdgeParentMidpoint);
+                        var faceCorner = new PlanetTopographyGenerator.Face([
                             vertexIndex,
                             vertexIndexOfEdgeParentMidpoint,
                             vertexIndexOfEdgeParentMidpointPrev,
-                        ];
+                        ]);
                         facesAfterSubdivide.push(faceCorner);
                     }
                     facesAfterSubdivide.push(faceCentral);
@@ -111,7 +113,7 @@ var ThisCouldBeBetter;
             }
             // clone
             clone() {
-                var returnValue = new Mesh(this.name + "_Clone", this.vertices.map(x => x.clone()), this.faces.map(x => x.slice(0)));
+                var returnValue = new Mesh(this.name + "_Clone", this.vertices.map(x => x.clone()), this.faces.map(x => x.clone()));
                 return returnValue;
             }
         }

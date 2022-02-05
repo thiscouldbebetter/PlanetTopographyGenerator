@@ -9,13 +9,14 @@
 <button onclick="buttonGenerate_Clicked();">Generate</button>
 <br />
 
-<div id="divMain"></div>
+<div id="divOutput"></div>
 
 <script type="text/javascript">
 
 function buttonGenerate_Clicked()
 {
 	var d = document;
+	d.getElementById("divOutput").innerHTML = "";
 	var inputTimesToSubdivide = d.getElementById("inputTimesToSubdivide");
 	var timesToSubdivide = parseInt(inputTimesToSubdivide.value);
 	var generator = new PlanetTopographyGenerator();
@@ -32,7 +33,9 @@ function buttonGenerate_Clicked()
 <script type="text/javascript" src="Coords.js"></script>
 <script type="text/javascript" src="Display.js"></script>
 <script type="text/javascript" src="Disposition.js"></script>
+<script type="text/javascript" src="Edge.js"></script>
 <script type="text/javascript" src="Empty.js"></script>
+<script type="text/javascript" src="Face.js"></script>
 <script type="text/javascript" src="Globals.js"></script>
 <script type="text/javascript" src="InputHelper.js"></script>
 <script type="text/javascript" src="Mesh.js"></script>

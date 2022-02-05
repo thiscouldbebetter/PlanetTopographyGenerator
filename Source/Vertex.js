@@ -8,8 +8,6 @@ var ThisCouldBeBetter;
                 this.pos = pos;
                 this.depth = (depth == null ? 0 : depth);
                 this.altitude = (altitude == null ? 0.5 : altitude);
-                this.edges = [];
-                this.faces = [];
             }
             static fromPos(pos) {
                 return new Vertex(pos, null, null);
@@ -26,13 +24,6 @@ var ThisCouldBeBetter;
                 var altitude = altitudeInterpolated + altitudeOffset;
                 var returnValue = new Vertex(pos, depth, altitude);
                 return returnValue;
-            }
-            static positionsForMany(vertices) {
-                var returnValues = [];
-                for (var i = 0; i < vertices.length; i++) {
-                    returnValues.push(vertices[i].pos);
-                }
-                return returnValues;
             }
             // instance methods
             clone() {

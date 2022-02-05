@@ -5,18 +5,15 @@ var ThisCouldBeBetter;
     (function (PlanetTopographyGenerator) {
         class MeshHelper {
             static buildOctahedron(name) {
-                var returnValue = new PlanetTopographyGenerator.Mesh(name, 
-                // vertices
-                [
-                    PlanetTopographyGenerator.Vertex.fromPos(new PlanetTopographyGenerator.Coords(0, 0, -1)),
-                    PlanetTopographyGenerator.Vertex.fromPos(new PlanetTopographyGenerator.Coords(1, 0, 0)),
-                    PlanetTopographyGenerator.Vertex.fromPos(new PlanetTopographyGenerator.Coords(0, 1, 0)),
-                    PlanetTopographyGenerator.Vertex.fromPos(new PlanetTopographyGenerator.Coords(-1, 0, 0)),
-                    PlanetTopographyGenerator.Vertex.fromPos(new PlanetTopographyGenerator.Coords(0, -1, 0)),
-                    PlanetTopographyGenerator.Vertex.fromPos(new PlanetTopographyGenerator.Coords(0, 0, 1)), // 5 - bottom
-                ], 
-                // faces
-                [
+                var vertices = [
+                    new PlanetTopographyGenerator.Coords(0, 0, -1),
+                    new PlanetTopographyGenerator.Coords(1, 0, 0),
+                    new PlanetTopographyGenerator.Coords(0, 1, 0),
+                    new PlanetTopographyGenerator.Coords(-1, 0, 0),
+                    new PlanetTopographyGenerator.Coords(0, -1, 0),
+                    new PlanetTopographyGenerator.Coords(0, 0, 1), // 5 - bottom
+                ].map(x => PlanetTopographyGenerator.Vertex.fromPos(x));
+                var faces = [
                     [0, 2, 1],
                     [0, 3, 2],
                     [0, 4, 3],
@@ -25,7 +22,8 @@ var ThisCouldBeBetter;
                     [5, 2, 3],
                     [5, 3, 4],
                     [5, 4, 1], // bottom northeast
-                ]);
+                ].map(x => new PlanetTopographyGenerator.Face(x));
+                var returnValue = new PlanetTopographyGenerator.Mesh(name, vertices, faces);
                 return returnValue;
             }
             static meshSpherify(meshToSpherify, radius) {

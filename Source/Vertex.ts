@@ -8,17 +8,11 @@ export class Vertex
 	depth: number;
 	altitude: number;
 
-	edges: number[][];
-	faces: number[][];
-
 	constructor(pos: Coords, depth: number, altitude: number)
 	{
 		this.pos = pos;
 		this.depth = (depth == null ? 0 : depth);
 		this.altitude = (altitude == null ? 0.5 : altitude);
-
-		this.edges = [];
-		this.faces = [];
 	}
 
 	static fromPos(pos: Coords): Vertex
@@ -50,18 +44,6 @@ export class Vertex
 		var returnValue = new Vertex(pos, depth, altitude);
 
 		return returnValue;
-	}
-
-	static positionsForMany(vertices: Vertex[]): Coords[]
-	{
-		var returnValues = [];
-
-		for (var i = 0; i < vertices.length; i++)
-		{
-			returnValues.push(vertices[i].pos);
-		}
-
-		return returnValues;
 	}
 
 	// instance methods

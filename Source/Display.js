@@ -34,12 +34,13 @@ var ThisCouldBeBetter;
                 var cameraPos = camera.loc.pos;
                 var plane = this._plane;
                 var displacementFromCameraToFaceVertex0 = this._displacement;
-                for (var vi = 0; vi < face.length; vi++) {
-                    var vertexIndex = face[vi];
+                var faceVertexCount = face.vertexCount();
+                for (var vi = 0; vi < faceVertexCount; vi++) {
+                    var vertexIndex = face.vertexIndex(vi);
                     var vertex = mesh.vertices[vertexIndex];
                     verticesInFace.push(vertex);
                 }
-                var positionsOfVerticesInFace = PlanetTopographyGenerator.Vertex.positionsForMany(verticesInFace);
+                var positionsOfVerticesInFace = verticesInFace.map(x => x.pos);
                 var faceNormal = plane.fromPoints(positionsOfVerticesInFace).normal;
                 displacementFromCameraToFaceVertex0.overwriteWith(verticesInFace[0].pos).subtract(cameraPos);
                 var faceNormalDotDisplacement = faceNormal.dotProduct(displacementFromCameraToFaceVertex0);
@@ -53,7 +54,8 @@ var ThisCouldBeBetter;
                 var drawPos = this._drawPos;
                 var faceAltitude = 0;
                 this.graphics.beginPath();
-                for (var vi = 0; vi < face.length; vi++) {
+                var faceVertexCount = face.vertexCount();
+                for (var vi = 0; vi < faceVertexCount; vi++) {
                     var vertex = verticesInFace[vi];
                     faceAltitude += vertex.altitude;
                     camera.convertWorldCoordsToViewCoords(drawPos.overwriteWith(vertex.pos));
@@ -65,7 +67,7 @@ var ThisCouldBeBetter;
                     }
                 }
                 this.graphics.closePath();
-                faceAltitude /= face.length;
+                faceAltitude /= face.vertexCount();
                 var altitudeAtLowTide = .65;
                 var altitudeAtHighTide = .67;
                 var altitudeAtTreeLine = .95;
@@ -108,8 +110,8 @@ var ThisCouldBeBetter;
                 this.canvas.width = this.size.x;
                 this.canvas.height = this.size.y;
                 this.graphics = this.canvas.getContext("2d");
-                var divMain = document.getElementById("divMain");
-                divMain.appendChild(this.canvas);
+                var divOutput = document.getElementById("divOutput");
+                divOutput.appendChild(this.canvas);
             }
         }
         PlanetTopographyGenerator.Display = Display;

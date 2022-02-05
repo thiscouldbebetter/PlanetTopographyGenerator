@@ -6,13 +6,13 @@ export class Mesh
 {
 	name: string;
 	vertices: Vertex[];
-	faces: number[][];
+	faces: Face[];
 
 	constructor
 	(
 		name: string,
 		vertices: Vertex[],
-		faces: number[][]
+		faces: Face[]
 	)
 	{
 		this.name = name;
@@ -20,9 +20,9 @@ export class Mesh
 		this.faces = faces;
 	}
 
-	edges(): Vertex[][][]
+	edges(): Edge[][]
 	{
-		var edgesByVertexIndex = new Array<Vertex[][]>();
+		var edgesByVertexIndex = new Array<Edge[]>();
 
 		for (var f = 0; f < this.faces.length; f++)
 		{
@@ -35,11 +35,11 @@ export class Mesh
 
 	edges_Face
 	(
-		face: number[],
-		edgesByVertexIndex: Vertex[][][]
+		face: Face,
+		edgesByVertexIndex: Edge[][]
 	): void
 	{
-		var numberOfVerticesInFace = face.length;
+		var numberOfVerticesInFace = face.vertexCount();
 
 		for (var vi = 0; vi < numberOfVerticesInFace; vi++)
 		{
@@ -49,8 +49,8 @@ export class Mesh
 				viNext = 0;
 			}
 
-			var vertexIndex = face[vi];
-			var vertexIndexNext = face[viNext];
+			var vertexIndex = face.vertexIndex(vi);
+			var vertexIndexNext = face.vertexIndex(viNext);
 
 			var vertexIndexMin =
 				Math.min(vertexIndex, vertexIndexNext);
@@ -61,7 +61,7 @@ export class Mesh
 				edgesByVertexIndex[vertexIndexMin];
 			if (edgesForVertexIndexMin == null)
 			{
-				edgesForVertexIndexMin = new Array<Vertex[]>();
+				edgesForVertexIndexMin = new Array<Edge>();
 				edgesByVertexIndex[vertexIndexMin] =
 					edgesForVertexIndexMin;
 			}
@@ -70,7 +70,7 @@ export class Mesh
 			{
 				var vertex = this.vertices[vertexIndex];
 				var vertexNext = this.vertices[vertexIndexNext];
-				var edge = [vertex, vertexNext];
+				var edge = new Edge([vertex, vertexNext]);
 				edgesForVertexIndexMin[vertexIndexMax] = edge;
 			}
 		}
@@ -87,7 +87,7 @@ export class Mesh
 		return this;
 	}
 
-	subdivide_Midpoints(edgesByVertexIndex: Vertex[][][]): number[][]
+	subdivide_Midpoints(edgesByVertexIndex: Edge[][]): number[][]
 	{
 		var edgeMidpoints = new Array<number[]>();
 
@@ -98,9 +98,10 @@ export class Mesh
 			var numberOfEdges = edgesForVertexIndexMin.length;
 			for (var vMax = 0; vMax < numberOfEdges; vMax++)
 			{
-				var edgeVertices = edgesForVertexIndexMin[vMax];
-				if (edgeVertices != null)
+				var edge = edgesForVertexIndexMin[vMax];
+				if (edge != null)
 				{
+					var edgeVertices = edge.vertices;
 					var edgeMidpoint = Vertex.interpolate
 					(
 						edgeVertices[0], edgeVertices[1]
@@ -120,37 +121,38 @@ export class Mesh
 
 	subdivide_Faces
 	(
-		edgesByVertexIndex: Vertex[][][],
+		edgesByVertexIndex: Edge[][],
 		edgeMidpoints: number[][]
-	): number[][]
+	): Face[]
 	{
 		var facesAfterSubdivide = [];
 
 		for (var f = 0; f < this.faces.length; f++)
 		{
 			var faceParent = this.faces[f];
+			var faceParentVertexCount = faceParent.vertexCount();
 
 			// var edgeMidpointsForParent = [];
 
-			var faceCentral = [];
+			var faceCentral = new Face([]);
 
-			for (var vi = 0; vi < faceParent.length; vi++)
+			for (var vi = 0; vi < faceParentVertexCount; vi++)
 			{
 				var viPrev = vi - 1; 
 				if (viPrev < 0)
 				{
-					viPrev = faceParent.length - 1;
+					viPrev = faceParentVertexCount - 1;
 				}
 
 				var viNext = vi + 1; 
-				if (viNext >= faceParent.length)
+				if (viNext >= faceParentVertexCount)
 				{
 					viNext = 0;
 				}
 
-				var vertexIndex = faceParent[vi];
-				var vertexIndexPrev = faceParent[viPrev];
-				var vertexIndexNext = faceParent[viNext];
+				var vertexIndex = faceParent.vertexIndex(vi);
+				var vertexIndexPrev = faceParent.vertexIndex(viPrev);
+				var vertexIndexNext = faceParent.vertexIndex(viNext);
 
 				var edgeVertexIndexMin = 
 					Math.min(vertexIndex, vertexIndexNext);
@@ -173,14 +175,17 @@ export class Mesh
 				var vertexIndexOfEdgeParentMidpointPrev = 
 					edgeMidpoints[edgePrevVertexIndexMin][edgePrevVertexIndexMax];
 
-				faceCentral.push(vertexIndexOfEdgeParentMidpoint);
+				faceCentral.vertexIndexAdd
+				(
+					vertexIndexOfEdgeParentMidpoint
+				);
 
-				var faceCorner = 
-				[
+				var faceCorner = new Face
+				([
 					vertexIndex,
 					vertexIndexOfEdgeParentMidpoint,
 					vertexIndexOfEdgeParentMidpointPrev, 
-				];
+				]);
 
 				facesAfterSubdivide.push(faceCorner);
 			}
@@ -202,7 +207,7 @@ export class Mesh
 		(
 			this.name + "_Clone", 
 			this.vertices.map(x => x.clone()), 
-			this.faces.map(x => x.slice(0))
+			this.faces.map(x => x.clone())
 		);
 		
 		return returnValue;
