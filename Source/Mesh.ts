@@ -76,18 +76,34 @@ export class Mesh
 		}
 	}
 
-	subdivide(): Mesh
+	subdivide(altitudeOffsetMax: number): Mesh
 	{
 		var edgesByVertexIndex = this.edges();
+
+		var vertexCountBeforeSubdivide = this.vertices.length;
+
 		var edgeMidpoints =
 			this.subdivide_Midpoints(edgesByVertexIndex);
+
+		var verticesJustCreated =
+			this.vertices.slice(vertexCountBeforeSubdivide);
+
+		this.subdivide_Altitudes
+		(
+			verticesJustCreated,
+			altitudeOffsetMax
+		);
+
 		var facesAfterSubdivide =
 			this.subdivide_Faces(edgesByVertexIndex, edgeMidpoints);
 		this.faces = facesAfterSubdivide;
 		return this;
 	}
 
-	subdivide_Midpoints(edgesByVertexIndex: Edge[][]): number[][]
+	subdivide_Midpoints
+	(
+		edgesByVertexIndex: Edge[][]
+	): number[][]
 	{
 		var edgeMidpoints = new Array<number[]>();
 
@@ -102,10 +118,12 @@ export class Mesh
 				if (edge != null)
 				{
 					var edgeVertices = edge.vertices;
+					var edgeVertex0 = edgeVertices[0];
 					var edgeMidpoint = Vertex.interpolate
 					(
-						edgeVertices[0], edgeVertices[1]
+						edgeVertex0, edgeVertices[1]
 					);
+
 					edgeMidpointsForVertexIndexMin[vMax] = 
 						this.vertices.length;
 					this.vertices.push(edgeMidpoint);
@@ -117,6 +135,22 @@ export class Mesh
 		}
 
 		return edgeMidpoints;
+	}
+
+	subdivide_Altitudes
+	(
+		verticesToOffset: Vertex[],
+		altitudeOffsetMax: number
+	): void
+	{
+		for (var i = 0; i < verticesToOffset.length; i++)
+		{
+			var vertex = verticesToOffset[i];
+
+			var random = 2 * Math.random() - 1;
+			var altitudeOffset = random * altitudeOffsetMax;
+			vertex.value += altitudeOffset;
+		}
 	}
 
 	subdivide_Faces

@@ -5,19 +5,21 @@ namespace ThisCouldBeBetter.PlanetTopographyGenerator
 export class Vertex
 {
 	pos: Coords;
-	depth: number;
-	altitude: number;
+	value: any;
 
-	constructor(pos: Coords, depth: number, altitude: number)
+	constructor
+	(
+		pos: Coords,
+		value: any
+	)
 	{
 		this.pos = pos;
-		this.depth = (depth == null ? 0 : depth);
-		this.altitude = (altitude == null ? 0.5 : altitude);
+		this.value = (value == null ? 0.5 : value);
 	}
 
 	static fromPos(pos: Coords): Vertex
 	{
-		return new Vertex(pos, null, null);
+		return new Vertex(pos, null);
 	}
 
 	// static methods
@@ -29,19 +31,17 @@ export class Vertex
 			vertex1.pos
 		).half();
 
-		var depth = vertex0.depth + 1;
-
-		var altitudeInterpolated = 
+		var valueInterpolated = 
 		(
-			vertex0.altitude 
-			+ vertex1.altitude
+			vertex0.value 
+			+ vertex1.value
 		) / 2;
-		var altitudeOffsetMax = 1 / Math.pow(2, depth);
-		var random = 2 * Math.random() - 1;
-		var altitudeOffset = random * altitudeOffsetMax;
-		var altitude = altitudeInterpolated + altitudeOffset;
 
-		var returnValue = new Vertex(pos, depth, altitude);
+		var returnValue = new Vertex
+		(
+			pos,
+			valueInterpolated
+		);
 
 		return returnValue;
 	}
@@ -52,7 +52,8 @@ export class Vertex
 	{
 		return new Vertex
 		(
-			this.pos.clone(), this.depth, this.altitude
+			this.pos.clone(),
+			this.value
 		);
 	}
 }

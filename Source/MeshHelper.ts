@@ -45,7 +45,43 @@ export class MeshHelper
 		return returnValue;
 	}
 
-	static meshSpherify(meshToSpherify: Mesh, radius: number): void
+	static buildSquare(name: string): Mesh
+	{
+		var vertices =
+		[ 
+			new Coords(-1, -1, 0), // 0 - northwest
+			new Coords(1, -1, 0), // 1 - northeast
+			new Coords(1, 1, 0), // 2 - southeast
+			new Coords(-1, 1, 0), // 3 - southwest
+		].map
+		(
+			x => Vertex.fromPos(x)
+		);
+
+		var faces =
+		[
+			[ 0, 3, 1 ], // north and west
+			[ 1, 3, 2 ], // south and east
+		].map
+		(
+			x => new Face(x)
+		);
+
+		var returnValue = new Mesh
+		(
+			name, 
+			vertices,
+			faces
+		);
+
+		return returnValue;
+	}
+
+	static meshSpherify
+	(
+		meshToSpherify: Mesh,
+		radius: number
+	): Mesh
 	{
 		var centerOfSphere = new Coords(0, 0, 0);
 
@@ -86,7 +122,10 @@ export class MeshHelper
 			var vertex = vertices[i];
 			vertex.pos.normalize().multiplyScalar(radius);
 		}
+
+		return meshToSpherify;
 	}
+
 }
 
 }

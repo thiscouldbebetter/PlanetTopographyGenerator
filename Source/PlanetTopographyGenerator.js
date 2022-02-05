@@ -4,15 +4,21 @@ var ThisCouldBeBetter;
     var PlanetTopographyGenerator;
     (function (PlanetTopographyGenerator_1) {
         class PlanetTopographyGenerator {
-            generate(timesToSubdivide) {
+            constructor(shapeInitial, timesToSubdivide, terrainGroup) {
+                this.shapeInitial = shapeInitial;
+                this.timesToSubdivide = timesToSubdivide;
+                this.terrainGroup = terrainGroup;
+            }
+            generate() {
                 //var timeStart = new Date();
-                var meshInitial = PlanetTopographyGenerator_1.MeshHelper.buildOctahedron("World");
+                var meshInitial = this.shapeInitial.toMesh();
                 var meshes = [meshInitial];
                 var mesh = meshInitial;
-                for (var i = 0; i < timesToSubdivide; i++) {
+                for (var i = 0; i < this.timesToSubdivide; i++) {
                     mesh = mesh.clone();
-                    mesh.subdivide();
-                    PlanetTopographyGenerator_1.MeshHelper.meshSpherify(mesh, 1);
+                    var altitudeOffsetMax = 1 / Math.pow(2, i + 1);
+                    mesh.subdivide(altitudeOffsetMax);
+                    mesh = this.shapeInitial.meshProcessAfterSubdivide(mesh);
                     meshes.push(mesh);
                 }
                 //var timeEnd = new Date();

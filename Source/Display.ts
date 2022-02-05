@@ -33,69 +33,28 @@ export class Display
 		this.graphics.clearRect(0, 0, this.size.x, this.size.y);
 	}
 
+	drawPos: Coords;
 	drawMeshForCamera(mesh: Mesh, camera: Camera): void
 	{
-		var faces = mesh.faces;
+		this.drawPos = new Coords(0, 0, 0);
 
-		var verticesInFace = new Array<Vertex>();
+		var faces = mesh.faces;
 
 		for (var f = 0; f < faces.length; f++)
 		{
 			var face = faces[f];
-			this.drawMeshForCamera_Face
-			(
-				mesh, camera, face, verticesInFace
-			);
+			this.drawMeshForCamera_Face(mesh, camera, face)
 		}
 	}
 
-	drawMeshForCamera_Face
-	(
-		mesh: Mesh, camera: Camera, face: Face, verticesInFace: Vertex[]
-	): void
-	{
-		verticesInFace.length = 0;
-
-		this.drawMeshForCamera_Face_VerticesInFace
-		(
-			mesh, camera, face, verticesInFace
-		);
-
-		if (verticesInFace.length > 0)
-		{
-			this.drawMeshForCamera_Face_Draw
-			(
-				camera, face, verticesInFace
-			);
-		}
-	}
-
-	drawMeshForCamera_Face_VerticesInFace
-	(
-		mesh: Mesh,
-		camera: Camera,
-		face: Face,
-		verticesInFace: Vertex[]
-	): Vertex[]
+	drawMeshForCamera_Face(mesh: Mesh, camera: Camera, face: Face): void
 	{
 		var cameraPos = camera.loc.pos;
+		var displacementFromCameraToFaceVertex0 = new Coords(0, 0, 0);
 
-		var plane = this._plane;
-		var displacementFromCameraToFaceVertex0 =
-			this._displacement;
-
-		var faceVertexCount = face.vertexCount();
-		for (var vi = 0; vi < faceVertexCount; vi++)
-		{
-			var vertexIndex = face.vertexIndex(vi);
-			var vertex = mesh.vertices[vertexIndex];
-			verticesInFace.push(vertex);
-		}
-
-		var positionsOfVerticesInFace = 
-			verticesInFace.map(x => x.pos);
-		var faceNormal = 
-			plane.fromPoints(positionsOfVerticesInFace).normal;
+		var verticesInFace = face.vertices(mesh);
+		var positionsOfVerticesInFace = verticesInFace.map(x => x.pos);
+		var faceNormal = Plane.fromPoints(positionsOfVerticesInFace).normal;
 
 		displacementFromCameraToFaceVertex0.overwriteWith
 		(
@@ -112,99 +71,68 @@ export class Display
 
 		var doesFacePointTowardCamera = (faceNormalDotDisplacement < 0);
 
-		if (doesFacePointTowardCamera == false)
+		if (doesFacePointTowardCamera)
 		{
-			verticesInFace = null;
+			this.drawMeshForCamera_Face_FacingCamera
+			(
+				mesh, camera, face, verticesInFace
+			);
 		}
-
-		return verticesInFace;
 	}
 
-	drawMeshForCamera_Face_Draw
+	drawMeshForCamera_Face_FacingCamera
 	(
-		camera: Camera, face: Face, verticesInFace: Vertex[]
+		mesh: Mesh,
+		camera: Camera,
+		face: Face,
+		verticesInFace: Vertex[]
 	): void
 	{
-		var drawPos = this._drawPos;
-
-		var faceAltitude = 0;
-
 		this.graphics.beginPath();
 
-		var faceVertexCount = face.vertexCount();
+		var faceVertexCount = verticesInFace.length;
+		var faceAltitude = 0;
+
 		for (var vi = 0; vi < faceVertexCount; vi++)
 		{
 			var vertex = verticesInFace[vi];
-			faceAltitude += vertex.altitude;
+			faceAltitude += vertex.value;
 
 			camera.convertWorldCoordsToViewCoords
 			(
-				drawPos.overwriteWith(vertex.pos)
+				this.drawPos.overwriteWith(vertex.pos)
 			);
 
 			if (vi == 0)
 			{
 				this.graphics.moveTo
 				(
-					drawPos.x, drawPos.y
+					this.drawPos.x, this.drawPos.y
 				);
 			}
 			else
 			{
 				this.graphics.lineTo
 				(
-					drawPos.x, drawPos.y
+					this.drawPos.x, this.drawPos.y
 				);
 			}
+
 		}
 
 		this.graphics.closePath();
 
-		faceAltitude /= face.vertexCount();
+		faceAltitude /= faceVertexCount;
 
-		var altitudeAtLowTide = .65;
-		var altitudeAtHighTide = .67;
-		var altitudeAtTreeLine = .95;
+		var terrainGroup = TerrainGroup.Instances().Earthlike; // hack
+		var colorForFace =
+			terrainGroup.colorAtAltitude(faceAltitude);
 
-		var colorForFace;
-		if (faceAltitude < altitudeAtLowTide)
-		{
-			colorForFace = "rgb(0, 0, 128)";
-		}
-		else if (faceAltitude < altitudeAtHighTide)
-		{
-			var colorComponent = Math.floor(255 * faceAltitude);
-			colorForFace = 
-				"rgb("
-				+ colorComponent + ","
-				+ colorComponent + ","
-				+ Math.floor(colorComponent / 4)
-				+ ")";
-		}
-		else if (faceAltitude < altitudeAtTreeLine)
-		{
-			var colorComponent = Math.floor(255 * faceAltitude);
-			colorForFace = 
-				"rgb(0, " + colorComponent + ", 0)";
-		}
-		else
-		{
-			var colorComponent = Math.floor(255 * faceAltitude);
-			colorForFace = 
-				"rgb("
-				+ colorComponent + ","
-				+ colorComponent + ","
-				+ colorComponent + ")";
-		}
-
-		var isWireframe = false;
-		if (isWireframe == false)
-		{
-			this.graphics.fillStyle = colorForFace;
-			this.graphics.strokeStyle = colorForFace;
-			this.graphics.fill();
-		}
+		this.graphics.fillStyle = colorForFace;
+		this.graphics.strokeStyle = colorForFace;
+		this.graphics.fill();
 		this.graphics.stroke();
+
 	}
 
 	initialize(): void

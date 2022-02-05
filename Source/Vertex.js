@@ -4,30 +4,24 @@ var ThisCouldBeBetter;
     var PlanetTopographyGenerator;
     (function (PlanetTopographyGenerator) {
         class Vertex {
-            constructor(pos, depth, altitude) {
+            constructor(pos, value) {
                 this.pos = pos;
-                this.depth = (depth == null ? 0 : depth);
-                this.altitude = (altitude == null ? 0.5 : altitude);
+                this.value = (value == null ? 0.5 : value);
             }
             static fromPos(pos) {
-                return new Vertex(pos, null, null);
+                return new Vertex(pos, null);
             }
             // static methods
             static interpolate(vertex0, vertex1) {
                 var pos = vertex0.pos.clone().add(vertex1.pos).half();
-                var depth = vertex0.depth + 1;
-                var altitudeInterpolated = (vertex0.altitude
-                    + vertex1.altitude) / 2;
-                var altitudeOffsetMax = 1 / Math.pow(2, depth);
-                var random = 2 * Math.random() - 1;
-                var altitudeOffset = random * altitudeOffsetMax;
-                var altitude = altitudeInterpolated + altitudeOffset;
-                var returnValue = new Vertex(pos, depth, altitude);
+                var valueInterpolated = (vertex0.value
+                    + vertex1.value) / 2;
+                var returnValue = new Vertex(pos, valueInterpolated);
                 return returnValue;
             }
             // instance methods
             clone() {
-                return new Vertex(this.pos.clone(), this.depth, this.altitude);
+                return new Vertex(this.pos.clone(), this.value);
             }
         }
         PlanetTopographyGenerator.Vertex = Vertex;

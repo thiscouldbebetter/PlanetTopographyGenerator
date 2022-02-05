@@ -15,4 +15,6 @@ var MeshHelper = ptg.MeshHelper;
 var Orientation = ptg.Orientation;
 var Plane = ptg.Plane;
 var Scene = ptg.Scene;
+var Shape = ptg.Shape;
+var TerrainGroup = ptg.TerrainGroup;
 var Vertex = ptg.Vertex;

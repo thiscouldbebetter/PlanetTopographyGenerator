@@ -13,6 +13,11 @@ export class Plane
 		this.distanceFromOrigin = distanceFromOrigin;
 	}
 
+	static fromPoints(points: Coords[]): Plane
+	{
+		return new Plane(new Coords(0, 0, 0), 0).fromPoints(points);
+	}
+
 	fromPoints(points: Coords[]): Plane
 	{
 		var point0 = points[0];

@@ -1,11 +1,32 @@
 <html>
-<body>
+<body onload="body_Loaded();">
 
 <h3>Planet Topography Generator</h3>
-<p>When the Generate button is clicked, a planet with random topography will be generated, by starting with an octohedron and recursively subdividing it until its shape approaches a sphere.  Increasing the number of times to subdivide will make for a more detailed globe, but the time to compute that detail will increase with the square of the number of levels.</p>
-<label>Times to Subdivide Initial Octohedron:</label>
+<p>
+	When the Generate button is clicked, a planet with random topography
+	will be generated, by starting with an octohedron and recursively
+	subdividing it until its shape approaches a sphere.  Increasing
+	the number of times to subdivide will make for a more detailed globe,
+	but the time to compute that detail will increase with the square of the number of levels.
+</p>
+
+<label>Terrain Group:</label>
+<br />
+<textarea id="textareaTerrainGroup" cols="40" rows="5">
+</textarea>
+<br />
+
+<label>Initial Shape:</label>
+<select id="selectShapeInitial">
+	<option>Octahedron</option>
+	<option>Square</option>
+</select>
+<br />
+
+<label>Times to Subdivide Initial Shape:</label>
 <input id="inputTimesToSubdivide" type="number" value="5"></input>
 <br />
+
 <button onclick="buttonGenerate_Clicked();">Generate</button>
 <br />
 
@@ -13,14 +34,40 @@
 
 <script type="text/javascript">
 
+function body_Loaded()
+{
+	var terrainGroup = TerrainGroup.Instances().Earthlike;
+	var terrainGroupAsString = terrainGroup.toString();
+	var d = document;
+	var textareaTerrainGroup =
+		d.getElementById("textareaTerrainGroup");
+	textareaTerrainGroup.value = terrainGroupAsString;
+}
+
 function buttonGenerate_Clicked()
 {
 	var d = document;
-	d.getElementById("divOutput").innerHTML = "";
-	var inputTimesToSubdivide = d.getElementById("inputTimesToSubdivide");
-	var timesToSubdivide = parseInt(inputTimesToSubdivide.value);
-	var generator = new PlanetTopographyGenerator();
-	generator.generate(timesToSubdivide);
+
+	var divOutput = d.getElementById("divOutput");
+	divOutput.innerHTML = "";
+
+	var inputTimesToSubdivide =
+		d.getElementById("inputTimesToSubdivide");
+	var timesToSubdivide =
+		parseInt(inputTimesToSubdivide.value);
+
+	var selectShapeInitial =
+		d.getElementById("selectShapeInitial");
+	var shapeInitialName = selectShapeInitial.value;
+
+	var shapeInitial = Shape.byName(shapeInitialName);
+
+	var generator = new PlanetTopographyGenerator
+	(
+		shapeInitial, timesToSubdivide
+	);
+
+	generator.generate();
 }
 
 </script>
@@ -43,6 +90,8 @@ function buttonGenerate_Clicked()
 <script type="text/javascript" src="Orientation.js"></script>
 <script type="text/javascript" src="Plane.js"></script>
 <script type="text/javascript" src="Scene.js"></script>
+<script type="text/javascript" src="Shape.js"></script>
+<script type="text/javascript" src="Terrain.js"></script>
 <script type="text/javascript" src="Vertex.js"></script>
 
 <script type="text/javascript" src="Imports.js"></script>

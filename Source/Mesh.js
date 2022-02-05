@@ -42,9 +42,12 @@ var ThisCouldBeBetter;
                     }
                 }
             }
-            subdivide() {
+            subdivide(altitudeOffsetMax) {
                 var edgesByVertexIndex = this.edges();
+                var vertexCountBeforeSubdivide = this.vertices.length;
                 var edgeMidpoints = this.subdivide_Midpoints(edgesByVertexIndex);
+                var verticesJustCreated = this.vertices.slice(vertexCountBeforeSubdivide);
+                this.subdivide_Altitudes(verticesJustCreated, altitudeOffsetMax);
                 var facesAfterSubdivide = this.subdivide_Faces(edgesByVertexIndex, edgeMidpoints);
                 this.faces = facesAfterSubdivide;
                 return this;
@@ -59,7 +62,8 @@ var ThisCouldBeBetter;
                         var edge = edgesForVertexIndexMin[vMax];
                         if (edge != null) {
                             var edgeVertices = edge.vertices;
-                            var edgeMidpoint = PlanetTopographyGenerator.Vertex.interpolate(edgeVertices[0], edgeVertices[1]);
+                            var edgeVertex0 = edgeVertices[0];
+                            var edgeMidpoint = PlanetTopographyGenerator.Vertex.interpolate(edgeVertex0, edgeVertices[1]);
                             edgeMidpointsForVertexIndexMin[vMax] =
                                 this.vertices.length;
                             this.vertices.push(edgeMidpoint);
@@ -69,6 +73,14 @@ var ThisCouldBeBetter;
                         edgeMidpointsForVertexIndexMin;
                 }
                 return edgeMidpoints;
+            }
+            subdivide_Altitudes(verticesToOffset, altitudeOffsetMax) {
+                for (var i = 0; i < verticesToOffset.length; i++) {
+                    var vertex = verticesToOffset[i];
+                    var random = 2 * Math.random() - 1;
+                    var altitudeOffset = random * altitudeOffsetMax;
+                    vertex.value += altitudeOffset;
+                }
             }
             subdivide_Faces(edgesByVertexIndex, edgeMidpoints) {
                 var facesAfterSubdivide = [];

@@ -26,6 +26,20 @@ var ThisCouldBeBetter;
                 var returnValue = new PlanetTopographyGenerator.Mesh(name, vertices, faces);
                 return returnValue;
             }
+            static buildSquare(name) {
+                var vertices = [
+                    new PlanetTopographyGenerator.Coords(-1, -1, 0),
+                    new PlanetTopographyGenerator.Coords(1, -1, 0),
+                    new PlanetTopographyGenerator.Coords(1, 1, 0),
+                    new PlanetTopographyGenerator.Coords(-1, 1, 0), // 3 - southwest
+                ].map(x => PlanetTopographyGenerator.Vertex.fromPos(x));
+                var faces = [
+                    [0, 3, 1],
+                    [1, 3, 2], // south and east
+                ].map(x => new PlanetTopographyGenerator.Face(x));
+                var returnValue = new PlanetTopographyGenerator.Mesh(name, vertices, faces);
+                return returnValue;
+            }
             static meshSpherify(meshToSpherify, radius) {
                 var centerOfSphere = new PlanetTopographyGenerator.Coords(0, 0, 0);
                 var vertices = meshToSpherify.vertices;
@@ -46,6 +60,7 @@ var ThisCouldBeBetter;
                     var vertex = vertices[i];
                     vertex.pos.normalize().multiplyScalar(radius);
                 }
+                return meshToSpherify;
             }
         }
         PlanetTopographyGenerator.MeshHelper = MeshHelper;

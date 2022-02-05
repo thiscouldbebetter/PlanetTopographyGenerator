@@ -4,19 +4,40 @@ namespace ThisCouldBeBetter.PlanetTopographyGenerator
 
 export class PlanetTopographyGenerator
 {
-	generate(timesToSubdivide: number): void
+	shapeInitial: Shape;
+	timesToSubdivide: number;
+	terrainGroup: TerrainGroup;
+
+	constructor
+	(
+		shapeInitial: Shape,
+		timesToSubdivide: number,
+		terrainGroup: TerrainGroup
+	)
+	{
+		this.shapeInitial = shapeInitial;
+		this.timesToSubdivide = timesToSubdivide;
+		this.terrainGroup = terrainGroup;
+	}
+
+	generate(): void
 	{
 		//var timeStart = new Date();
 
-		var meshInitial = MeshHelper.buildOctahedron("World");
+		var meshInitial = this.shapeInitial.toMesh();
+
 		var meshes = [ meshInitial ];
 
 		var mesh = meshInitial;
-		for (var i = 0; i < timesToSubdivide; i++)
+		for (var i = 0; i < this.timesToSubdivide; i++)
 		{
 			mesh = mesh.clone();
-			mesh.subdivide();
-			MeshHelper.meshSpherify(mesh, 1);
+			var altitudeOffsetMax = 1 / Math.pow(2, i + 1);
+			mesh.subdivide(altitudeOffsetMax);
+			mesh = this.shapeInitial.meshProcessAfterSubdivide
+			(
+				mesh
+			);
 			meshes.push(mesh);
 		}
 
