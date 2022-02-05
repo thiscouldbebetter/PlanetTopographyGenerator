@@ -3,11 +3,12 @@ var ThisCouldBeBetter;
 (function (ThisCouldBeBetter) {
     var PlanetTopographyGenerator;
     (function (PlanetTopographyGenerator) {
-        class Empty {
-            constructor(loc) {
-                this.loc = loc;
+        class Disposition {
+            constructor(pos, orientation) {
+                this.pos = pos;
+                this.orientation = orientation;
             }
         }
-        PlanetTopographyGenerator.Empty = Empty;
+        PlanetTopographyGenerator.Disposition = Disposition;
     })(PlanetTopographyGenerator = ThisCouldBeBetter.PlanetTopographyGenerator || (ThisCouldBeBetter.PlanetTopographyGenerator = {}));
 })(ThisCouldBeBetter || (ThisCouldBeBetter = {}));
