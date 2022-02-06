@@ -132,7 +132,70 @@ export class Display
 		this.graphics.strokeStyle = colorForFace;
 		this.graphics.fill();
 		this.graphics.stroke();
+	}
 
+	drawMeshProjectedMercator
+	(
+		meshToProject: Mesh
+	): void
+	{
+		this.drawPos = new Coords(0, 0, 0);
+
+		var meshProjected = meshToProject.clone();
+
+		var meshVertexPositions = meshProjected.vertices.map(x => x.pos);
+		meshVertexPositions.forEach
+		(
+			vertexPos =>
+			{
+				var vertexPosAsPolar = Polar.create().fromCoords
+				(
+					vertexPos
+				);
+
+				vertexPos.overwriteWithXYZ
+				(
+					vertexPosAsPolar.azimuthInTurns,
+					vertexPosAsPolar.elevationInTurns * 2,
+					0
+				);
+
+				vertexPos.multiply
+				(
+					this.size
+				);
+			}
+		);
+
+		var camera = new Camera
+		(
+			Camera.name,
+			null, // focalLength
+			this.size,
+			new Disposition
+			(
+				new Coords(this.size.x / 2, 0, -100),
+				new Orientation
+				(
+					new Coords(0, 0, 1), // forward
+					new Coords(0, 1, 0) // down
+				)
+			)
+		);
+
+		var meshFaces = meshProjected.faces;
+		var faceIndexMax = meshFaces.length * .37488; // hack - Have to split mesh first, or else the faces at the 0 boundary stretch across whole x-axis!
+		for (var i = 0; i < faceIndexMax; i++)
+		{
+			var face = meshFaces[i];
+
+			var verticesInFace = face.vertices(meshProjected);
+
+			this.drawMeshForCamera_Face_FacingCamera
+			(
+				meshProjected, camera, face, verticesInFace
+			);
+		}
 	}
 
 	initialize(): void

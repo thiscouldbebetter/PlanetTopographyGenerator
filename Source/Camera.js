@@ -16,7 +16,11 @@ var ThisCouldBeBetter;
                 var orientation = this.loc.orientation;
                 coordsToConvert.subtract(this.loc.pos);
                 var distanceAlongCameraForward = coordsToConvert.dotProduct(orientation.forward);
-                coordsToConvert.overwriteWithXYZ(coordsToConvert.dotProduct(orientation.right), coordsToConvert.dotProduct(orientation.down), distanceAlongCameraForward).multiplyScalar(this.focalLength).divideScalar(distanceAlongCameraForward).add(this.viewSizeHalf);
+                coordsToConvert.overwriteWithXYZ(coordsToConvert.dotProduct(orientation.right), coordsToConvert.dotProduct(orientation.down), distanceAlongCameraForward);
+                if (this.focalLength != null) {
+                    coordsToConvert.multiplyScalar(this.focalLength).divideScalar(distanceAlongCameraForward);
+                }
+                coordsToConvert.add(this.viewSizeHalf);
                 return coordsToConvert;
             }
             // scene

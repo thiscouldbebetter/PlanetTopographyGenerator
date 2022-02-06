@@ -48,13 +48,20 @@ export class Camera
 			coordsToConvert.dotProduct(orientation.right),
 			coordsToConvert.dotProduct(orientation.down),
 			distanceAlongCameraForward
-		).multiplyScalar
-		(
-			this.focalLength
-		).divideScalar
-		(
-			distanceAlongCameraForward
-		).add
+		);
+
+		if (this.focalLength != null)
+		{
+			coordsToConvert.multiplyScalar
+			(
+				this.focalLength
+			).divideScalar
+			(
+				distanceAlongCameraForward
+			);
+		}
+
+		coordsToConvert.add
 		(
 			this.viewSizeHalf
 		);

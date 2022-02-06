@@ -8,6 +8,8 @@ export class PlanetTopographyGenerator
 	timesToSubdivide: number;
 	terrainGroup: TerrainGroup;
 
+	millsecondsToGenerate: number;
+
 	constructor
 	(
 		shapeInitial: Shape,
@@ -18,15 +20,17 @@ export class PlanetTopographyGenerator
 		this.shapeInitial = shapeInitial;
 		this.timesToSubdivide = timesToSubdivide;
 		this.terrainGroup = terrainGroup;
+
+		this.millsecondsToGenerate = null;
 	}
 
-	generate(): void
+	meshesGenerate(): Mesh[]
 	{
-		//var timeStart = new Date();
+		var timeStart = new Date();
 
 		var meshInitial = this.shapeInitial.toMesh();
 
-		var meshes = [ meshInitial ];
+		var meshesGenerated = [ meshInitial ];
 
 		var mesh = meshInitial;
 		for (var i = 0; i < this.timesToSubdivide; i++)
@@ -38,12 +42,19 @@ export class PlanetTopographyGenerator
 			(
 				mesh
 			);
-			meshes.push(mesh);
+			meshesGenerated.push(mesh);
 		}
 
-		//var timeEnd = new Date();
-		//var durationInMilliseconds = timeEnd - timeStart;
+		var timeEnd = new Date();
+		var millisecondsToGenerate =
+			timeEnd.getTime() - timeStart.getTime();
+		this.millsecondsToGenerate = millisecondsToGenerate;
 
+		return meshesGenerated;
+	}
+
+	meshesToScenes(meshes: Mesh[]): Scene[]
+	{
 		var scenes = [];
 
 		for (var i = 0; i < meshes.length; i++)
@@ -99,7 +110,7 @@ export class PlanetTopographyGenerator
 			scenes.push(scene);
 		}
 
-		Globals.Instance.initialize(scenes);
+		return scenes;
 	}
 }
 

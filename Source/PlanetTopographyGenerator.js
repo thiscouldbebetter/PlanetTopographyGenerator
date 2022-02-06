@@ -8,21 +8,26 @@ var ThisCouldBeBetter;
                 this.shapeInitial = shapeInitial;
                 this.timesToSubdivide = timesToSubdivide;
                 this.terrainGroup = terrainGroup;
+                this.millsecondsToGenerate = null;
             }
-            generate() {
-                //var timeStart = new Date();
+            meshesGenerate() {
+                var timeStart = new Date();
                 var meshInitial = this.shapeInitial.toMesh();
-                var meshes = [meshInitial];
+                var meshesGenerated = [meshInitial];
                 var mesh = meshInitial;
                 for (var i = 0; i < this.timesToSubdivide; i++) {
                     mesh = mesh.clone();
                     var altitudeOffsetMax = 1 / Math.pow(2, i + 1);
                     mesh.subdivide(altitudeOffsetMax);
                     mesh = this.shapeInitial.meshProcessAfterSubdivide(mesh);
-                    meshes.push(mesh);
+                    meshesGenerated.push(mesh);
                 }
-                //var timeEnd = new Date();
-                //var durationInMilliseconds = timeEnd - timeStart;
+                var timeEnd = new Date();
+                var millisecondsToGenerate = timeEnd.getTime() - timeStart.getTime();
+                this.millsecondsToGenerate = millisecondsToGenerate;
+                return meshesGenerated;
+            }
+            meshesToScenes(meshes) {
                 var scenes = [];
                 for (var i = 0; i < meshes.length; i++) {
                     var mesh = meshes[i];
@@ -39,7 +44,7 @@ var ThisCouldBeBetter;
                     var scene = new PlanetTopographyGenerator_1.Scene(mesh, camera);
                     scenes.push(scene);
                 }
-                PlanetTopographyGenerator_1.Globals.Instance.initialize(scenes);
+                return scenes;
             }
         }
         PlanetTopographyGenerator_1.PlanetTopographyGenerator = PlanetTopographyGenerator;

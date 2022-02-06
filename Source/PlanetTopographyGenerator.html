@@ -28,6 +28,14 @@
 <input id="inputTimesToSubdivide" type="number" value="5"></input>
 <br />
 
+<label>Projection:</label>
+<select id="selectProjection">
+	<option>3D</option>
+	<option>Mercator</option>
+</select>
+
+<br />
+
 <button onclick="buttonGenerate_Clicked();">Generate</button>
 <br />
 
@@ -52,23 +60,44 @@ function buttonGenerate_Clicked()
 	var divOutput = d.getElementById("divOutput");
 	divOutput.innerHTML = "";
 
+	var selectShapeInitial =
+		d.getElementById("selectShapeInitial");
+	var shapeInitialName = selectShapeInitial.value;
+	var shapeInitial = Shape.byName(shapeInitialName);
+
 	var inputTimesToSubdivide =
 		d.getElementById("inputTimesToSubdivide");
 	var timesToSubdivide =
 		parseInt(inputTimesToSubdivide.value);
 
-	var selectShapeInitial =
-		d.getElementById("selectShapeInitial");
-	var shapeInitialName = selectShapeInitial.value;
-
-	var shapeInitial = Shape.byName(shapeInitialName);
+	var selectProjection =
+		d.getElementById("selectProjection");
+	var projectionName = selectProjection.value;
 
 	var generator = new PlanetTopographyGenerator
 	(
 		shapeInitial, timesToSubdivide
 	);
 
-	generator.generate();
+	var meshes = generator.meshesGenerate();
+
+	if (projectionName == "3D")
+	{
+		var scenes = generator.meshesToScenes(meshes);
+		Globals.Instance.initialize(scenes);
+	}
+	else if (projectionName == "Mercator")
+	{
+		var meshFinal = meshes[meshes.length - 1];
+		var display = new Display(new Coords(200, 200, 1));
+		display.initialize();
+		display.drawMeshProjectedMercator(meshFinal);
+	}
+	else
+	{
+		throw new Error("Unrecognized projection type: " + projectionName + ".");
+	}
+
 }
 
 </script>
@@ -90,6 +119,7 @@ function buttonGenerate_Clicked()
 <script type="text/javascript" src="MeshHelper.js"></script>
 <script type="text/javascript" src="Orientation.js"></script>
 <script type="text/javascript" src="Plane.js"></script>
+<script type="text/javascript" src="Polar.js"></script>
 <script type="text/javascript" src="Scene.js"></script>
 <script type="text/javascript" src="Shape.js"></script>
 <script type="text/javascript" src="Terrain.js"></script>

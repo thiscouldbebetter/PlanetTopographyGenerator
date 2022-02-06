@@ -16,6 +16,7 @@ import Mesh = ptg.Mesh;
 import MeshHelper = ptg.MeshHelper;
 import Orientation = ptg.Orientation;
 import Plane = ptg.Plane;
+import Polar = ptg.Polar;
 import Scene = ptg.Scene;
 import Shape = ptg.Shape;
 import TerrainGroup = ptg.TerrainGroup;
