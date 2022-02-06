@@ -40,6 +40,7 @@ export class Shape_Instances
 {
 	Octahedron: Shape;
 	Square: Shape;
+	Tube: Shape;
 
 	_All: Shape[];
 	_AllByName: Map<string, Shape>;
@@ -60,10 +61,18 @@ export class Shape_Instances
 			(m: Mesh) => m
 		);
 
+		this.Tube = new Shape
+		(
+			"Tube",
+			() => MeshHelper.buildTube("Tube"),
+			(m: Mesh) => MeshHelper.meshCylindrify(m, 1)
+		);
+
 		this._All =
 		[
 			this.Octahedron,
-			this.Square
+			this.Square,
+			this.Tube
 		];
 
 		this._AllByName = new Map(this._All.map(x => [x.name, x]));

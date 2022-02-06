@@ -24,10 +24,12 @@ var ThisCouldBeBetter;
             constructor() {
                 this.Octahedron = new Shape("Octahedron", () => PlanetTopographyGenerator.MeshHelper.buildOctahedron("Octahedron"), (m) => PlanetTopographyGenerator.MeshHelper.meshSpherify(m, 1));
                 this.Square = new Shape("Square", () => PlanetTopographyGenerator.MeshHelper.buildSquare("Square"), (m) => m);
+                this.Tube = new Shape("Tube", () => PlanetTopographyGenerator.MeshHelper.buildTube("Tube"), (m) => PlanetTopographyGenerator.MeshHelper.meshCylindrify(m, 1));
                 this._All =
                     [
                         this.Octahedron,
-                        this.Square
+                        this.Square,
+                        this.Tube
                     ];
                 this._AllByName = new Map(this._All.map(x => [x.name, x]));
             }
