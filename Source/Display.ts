@@ -144,11 +144,12 @@ export class Display
 		var meshProjected = meshToProject.clone();
 
 		var meshVertexPositions = meshProjected.vertices.map(x => x.pos);
+		var polar = Polar.create();
 		meshVertexPositions.forEach
 		(
 			vertexPos =>
 			{
-				var vertexPosAsPolar = Polar.create().fromCoords
+				var vertexPosAsPolar = polar.fromCoords
 				(
 					vertexPos
 				);
@@ -171,10 +172,10 @@ export class Display
 		(
 			Camera.name,
 			null, // focalLength
-			this.size,
+			this.size.clone(),
 			new Disposition
 			(
-				new Coords(this.size.x / 2, 0, -100),
+				new Coords(this.size.x / 2, 0, 0),
 				new Orientation
 				(
 					new Coords(0, 0, 1), // forward
@@ -184,7 +185,7 @@ export class Display
 		);
 
 		var meshFaces = meshProjected.faces;
-		var faceIndexMax = meshFaces.length * .37488; // hack - Have to split mesh first, or else the faces at the 0 boundary stretch across whole x-axis!
+		var faceIndexMax = meshFaces.length; //  * .37488; // hack - Have to split mesh first, or else the faces at the 0 boundary stretch across whole x-axis!
 		for (var i = 0; i < faceIndexMax; i++)
 		{
 			var face = meshFaces[i];

@@ -4,10 +4,15 @@
 <h3>Planet Topography Generator</h3>
 <p>
 	When the Generate button is clicked, a planet with random topography
-	will be generated, by starting with an octohedron and recursively
+	will be generated, by starting with a specified shape and recursively
 	subdividing it until its shape approaches a sphere.  Increasing
 	the number of times to subdivide will make for a more detailed globe,
 	but the time to compute that detail will increase with the square of the number of levels.
+</p>
+
+<p>
+	A terrain group, which maps colors to altitudes, and a Mercator projection, can also be specified,
+	but they are currently not fully implemented.
 </p>
 
 <label>Terrain Group:</label>
@@ -32,6 +37,7 @@
 <select id="selectProjection">
 	<option>3D</option>
 	<option>Mercator</option>
+	<option>3D and Mercator</option>
 </select>
 
 <br />
@@ -74,9 +80,13 @@ function buttonGenerate_Clicked()
 		d.getElementById("selectProjection");
 	var projectionName = selectProjection.value;
 
+	var terrainGroup = null; // todo
+
+	var randomizer = new Randomizer(); // todo
+
 	var generator = new PlanetTopographyGenerator
 	(
-		shapeInitial, timesToSubdivide
+		shapeInitial, timesToSubdivide, terrainGroup, randomizer
 	);
 
 	var meshes = generator.meshesGenerate();
@@ -89,9 +99,27 @@ function buttonGenerate_Clicked()
 	else if (projectionName == "Mercator")
 	{
 		var meshFinal = meshes[meshes.length - 1];
+		var meshToProject = meshFinal;
 		var display = new Display(new Coords(200, 200, 1));
 		display.initialize();
-		display.drawMeshProjectedMercator(meshFinal);
+		var meshRippedAlongPrimeMeridian =
+			MeshHelper.meshRip(meshToProject.clone());
+		display.drawMeshProjectedMercator(meshRippedAlongPrimeMeridian);
+	}
+	else if (projectionName == "3D and Mercator")
+	{
+		// hack
+
+		var scenes = generator.meshesToScenes(meshes);
+		Globals.Instance.initialize(scenes);
+
+		var meshFinal = meshes[meshes.length - 1];
+		var meshToProject = meshFinal;
+		var display = new Display(new Coords(200, 200, 1));
+		display.initialize();
+		var meshRippedAlongPrimeMeridian =
+			MeshHelper.meshRip(meshToProject.clone());
+		display.drawMeshProjectedMercator(meshRippedAlongPrimeMeridian);
 	}
 	else
 	{
@@ -120,6 +148,7 @@ function buttonGenerate_Clicked()
 <script type="text/javascript" src="Orientation.js"></script>
 <script type="text/javascript" src="Plane.js"></script>
 <script type="text/javascript" src="Polar.js"></script>
+<script type="text/javascript" src="Randomizer.js"></script>
 <script type="text/javascript" src="Scene.js"></script>
 <script type="text/javascript" src="Shape.js"></script>
 <script type="text/javascript" src="Terrain.js"></script>

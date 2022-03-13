@@ -15,6 +15,7 @@ var MeshHelper = ptg.MeshHelper;
 var Orientation = ptg.Orientation;
 var Plane = ptg.Plane;
 var Polar = ptg.Polar;
+var Randomizer = ptg.Randomizer;
 var Scene = ptg.Scene;
 var Shape = ptg.Shape;
 var TerrainGroup = ptg.TerrainGroup;

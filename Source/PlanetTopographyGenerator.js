@@ -4,10 +4,11 @@ var ThisCouldBeBetter;
     var PlanetTopographyGenerator;
     (function (PlanetTopographyGenerator_1) {
         class PlanetTopographyGenerator {
-            constructor(shapeInitial, timesToSubdivide, terrainGroup) {
+            constructor(shapeInitial, timesToSubdivide, terrainGroup, randomizer) {
                 this.shapeInitial = shapeInitial;
                 this.timesToSubdivide = timesToSubdivide;
                 this.terrainGroup = terrainGroup;
+                this.randomizer = randomizer;
                 this.millsecondsToGenerate = null;
             }
             meshesGenerate() {
@@ -18,7 +19,7 @@ var ThisCouldBeBetter;
                 for (var i = 0; i < this.timesToSubdivide; i++) {
                     mesh = mesh.clone();
                     var altitudeOffsetMax = 1 / Math.pow(2, i + 1);
-                    mesh.subdivide(altitudeOffsetMax);
+                    mesh.subdivide(altitudeOffsetMax, this.randomizer);
                     mesh = this.shapeInitial.meshProcessAfterSubdivide(mesh);
                     meshesGenerated.push(mesh);
                 }

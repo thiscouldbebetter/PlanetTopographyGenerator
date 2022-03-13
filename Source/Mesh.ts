@@ -76,7 +76,7 @@ export class Mesh
 		}
 	}
 
-	subdivide(altitudeOffsetMax: number): Mesh
+	subdivide(altitudeOffsetMax: number, randomizer: Randomizer): Mesh
 	{
 		var edgesByVertexIndex = this.edges();
 
@@ -91,7 +91,8 @@ export class Mesh
 		this.subdivide_Altitudes
 		(
 			verticesJustCreated,
-			altitudeOffsetMax
+			altitudeOffsetMax,
+			randomizer
 		);
 
 		var facesAfterSubdivide =
@@ -140,14 +141,15 @@ export class Mesh
 	subdivide_Altitudes
 	(
 		verticesToOffset: Vertex[],
-		altitudeOffsetMax: number
+		altitudeOffsetMax: number,
+		randomizer: Randomizer
 	): void
 	{
 		for (var i = 0; i < verticesToOffset.length; i++)
 		{
 			var vertex = verticesToOffset[i];
 
-			var random = 2 * Math.random() - 1;
+			var random = 2 * randomizer.fraction() - 1;
 			var altitudeOffset = random * altitudeOffsetMax;
 			vertex.value += altitudeOffset;
 		}

@@ -7,7 +7,10 @@ export class Plane
 	normal: Coords;
 	distanceFromOrigin: number;
 
-	constructor(normal: Coords, distanceFromOrigin: number)
+	constructor
+	(
+		normal: Coords, distanceFromOrigin: number
+	)
 	{
 		this.normal = normal;
 		this.distanceFromOrigin = distanceFromOrigin;
@@ -16,6 +19,18 @@ export class Plane
 	static fromPoints(points: Coords[]): Plane
 	{
 		return new Plane(new Coords(0, 0, 0), 0).fromPoints(points);
+	}
+
+	distanceToPointAlongNormal(pointToCheck: Coords): number
+	{
+		var distanceOfPointFromOriginAlongNormal =
+			pointToCheck.dotProduct(this.normal);
+
+		var distanceOfPointAbovePlaneAlongNormal =
+			distanceOfPointFromOriginAlongNormal
+			- this.distanceFromOrigin;
+
+		return distanceOfPointAbovePlaneAlongNormal;
 	}
 
 	fromPoints(points: Coords[]): Plane

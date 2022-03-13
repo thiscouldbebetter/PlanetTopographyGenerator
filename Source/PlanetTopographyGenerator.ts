@@ -7,6 +7,7 @@ export class PlanetTopographyGenerator
 	shapeInitial: Shape;
 	timesToSubdivide: number;
 	terrainGroup: TerrainGroup;
+	randomizer: Randomizer
 
 	millsecondsToGenerate: number;
 
@@ -14,12 +15,14 @@ export class PlanetTopographyGenerator
 	(
 		shapeInitial: Shape,
 		timesToSubdivide: number,
-		terrainGroup: TerrainGroup
+		terrainGroup: TerrainGroup,
+		randomizer: Randomizer
 	)
 	{
 		this.shapeInitial = shapeInitial;
 		this.timesToSubdivide = timesToSubdivide;
 		this.terrainGroup = terrainGroup;
+		this.randomizer = randomizer;
 
 		this.millsecondsToGenerate = null;
 	}
@@ -37,7 +40,7 @@ export class PlanetTopographyGenerator
 		{
 			mesh = mesh.clone();
 			var altitudeOffsetMax = 1 / Math.pow(2, i + 1);
-			mesh.subdivide(altitudeOffsetMax);
+			mesh.subdivide(altitudeOffsetMax, this.randomizer);
 			mesh = this.shapeInitial.meshProcessAfterSubdivide
 			(
 				mesh

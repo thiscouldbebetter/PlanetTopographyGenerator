@@ -189,6 +189,105 @@ export class MeshHelper
 		return meshToCylindrify;
 	}
 
+	static meshRip(meshToRip: Mesh): Mesh
+	{
+		// hack - Only rips spheres along prime meridian.
+
+		var meshVertices = meshToRip.vertices;
+		var meshVerticesCountOriginal = meshVertices.length;
+		var meshFaces = meshToRip.faces;
+
+		var polar = Polar.create();
+		var verticesAlongRipOriginalAsIndices = new Array<number>();
+		meshVertices.forEach
+		(
+			(vertex, vi) =>
+			{
+				if (polar.fromCoords(vertex.pos).azimuthInTurns == 0)
+				{
+					verticesAlongRipOriginalAsIndices.push(vi);
+				}
+			}
+		);
+
+		var verticesAlongRipOriginal =
+			verticesAlongRipOriginalAsIndices.map(vi => meshVertices[vi]);
+
+		var planeOfRipNormal = Plane.fromPoints
+		([
+			verticesAlongRipOriginal[0].pos,
+			verticesAlongRipOriginal[1].pos,
+			verticesAlongRipOriginal[2].pos,
+		]);
+
+		var verticesAlongRipCreated =
+			verticesAlongRipOriginal.map(x => x.clone());
+
+		var facesAdjoiningRip = meshFaces.filter
+		(
+			face =>
+				face.vertices(meshToRip).some
+				(
+					faceVertex =>
+						verticesAlongRipOriginal.indexOf(faceVertex) >= 0
+				)
+		);
+
+		facesAdjoiningRip.forEach
+		(
+			face =>
+			{
+				var faceVertexIndices = face.vertexIndices();
+
+				var vertexNotAlongRipIndex =
+					faceVertexIndices.find
+					(
+						vi => verticesAlongRipOriginalAsIndices.indexOf(vi) == -1
+					);
+
+				if (vertexNotAlongRipIndex == null)
+				{
+					throw new Error("This shouldn't happen.");
+				}
+				else
+				{
+					var vertexNotAlongRipPos =
+						meshVertices[vertexNotAlongRipIndex].pos;
+
+					var isFaceAbovePlane =
+						planeOfRipNormal.distanceToPointAlongNormal
+						(
+							vertexNotAlongRipPos
+						) > 0;
+
+					if (isFaceAbovePlane)
+					{
+						// Change the old vertex indices to the new ones.
+						var faceVertexIndices = face.vertexIndices();
+						var faceVertices = face.vertices(meshToRip);
+						for (var v = 0; v < faceVertices.length; v++)
+						{
+							var vertex = faceVertices[v];
+
+							if (verticesAlongRipOriginal.indexOf(vertex) >= 0)
+							{
+								var vertexOffsetOld =
+									verticesAlongRipOriginal.indexOf(vertex);
+								var vertexIndexNew =
+									meshVerticesCountOriginal + vertexOffsetOld;
+								faceVertexIndices[v] = vertexIndexNew;
+							}
+						}
+					}
+				}
+			}
+		);
+
+		meshVertices.push(...verticesAlongRipCreated);
+
+		return meshToRip;
+	}
+
 	static meshScale(meshToScale: Mesh, scaleFactors: Coords): Mesh
 	{
 		meshToScale.vertices.forEach(x => x.pos.multiply(scaleFactors) );

@@ -42,12 +42,12 @@ var ThisCouldBeBetter;
                     }
                 }
             }
-            subdivide(altitudeOffsetMax) {
+            subdivide(altitudeOffsetMax, randomizer) {
                 var edgesByVertexIndex = this.edges();
                 var vertexCountBeforeSubdivide = this.vertices.length;
                 var edgeMidpoints = this.subdivide_Midpoints(edgesByVertexIndex);
                 var verticesJustCreated = this.vertices.slice(vertexCountBeforeSubdivide);
-                this.subdivide_Altitudes(verticesJustCreated, altitudeOffsetMax);
+                this.subdivide_Altitudes(verticesJustCreated, altitudeOffsetMax, randomizer);
                 var facesAfterSubdivide = this.subdivide_Faces(edgesByVertexIndex, edgeMidpoints);
                 this.faces = facesAfterSubdivide;
                 return this;
@@ -74,10 +74,10 @@ var ThisCouldBeBetter;
                 }
                 return edgeMidpoints;
             }
-            subdivide_Altitudes(verticesToOffset, altitudeOffsetMax) {
+            subdivide_Altitudes(verticesToOffset, altitudeOffsetMax, randomizer) {
                 for (var i = 0; i < verticesToOffset.length; i++) {
                     var vertex = verticesToOffset[i];
-                    var random = 2 * Math.random() - 1;
+                    var random = 2 * randomizer.fraction() - 1;
                     var altitudeOffset = random * altitudeOffsetMax;
                     vertex.value += altitudeOffset;
                 }

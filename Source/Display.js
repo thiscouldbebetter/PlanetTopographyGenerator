@@ -64,17 +64,18 @@ var ThisCouldBeBetter;
                 this.drawPos = new PlanetTopographyGenerator.Coords(0, 0, 0);
                 var meshProjected = meshToProject.clone();
                 var meshVertexPositions = meshProjected.vertices.map(x => x.pos);
+                var polar = PlanetTopographyGenerator.Polar.create();
                 meshVertexPositions.forEach(vertexPos => {
-                    var vertexPosAsPolar = PlanetTopographyGenerator.Polar.create().fromCoords(vertexPos);
+                    var vertexPosAsPolar = polar.fromCoords(vertexPos);
                     vertexPos.overwriteWithXYZ(vertexPosAsPolar.azimuthInTurns, vertexPosAsPolar.elevationInTurns * 2, 0);
                     vertexPos.multiply(this.size);
                 });
                 var camera = new PlanetTopographyGenerator.Camera(PlanetTopographyGenerator.Camera.name, null, // focalLength
-                this.size, new PlanetTopographyGenerator.Disposition(new PlanetTopographyGenerator.Coords(this.size.x / 2, 0, -100), new PlanetTopographyGenerator.Orientation(new PlanetTopographyGenerator.Coords(0, 0, 1), // forward
+                this.size.clone(), new PlanetTopographyGenerator.Disposition(new PlanetTopographyGenerator.Coords(this.size.x / 2, 0, 0), new PlanetTopographyGenerator.Orientation(new PlanetTopographyGenerator.Coords(0, 0, 1), // forward
                 new PlanetTopographyGenerator.Coords(0, 1, 0) // down
                 )));
                 var meshFaces = meshProjected.faces;
-                var faceIndexMax = meshFaces.length * .37488; // hack - Have to split mesh first, or else the faces at the 0 boundary stretch across whole x-axis!
+                var faceIndexMax = meshFaces.length; //  * .37488; // hack - Have to split mesh first, or else the faces at the 0 boundary stretch across whole x-axis!
                 for (var i = 0; i < faceIndexMax; i++) {
                     var face = meshFaces[i];
                     var verticesInFace = face.vertices(meshProjected);
